@@ -1,0 +1,113 @@
+﻿using Raylib_cs;
+
+namespace Lotus.SplashScreen;
+
+// insane lie for class name, this has sounds asw, not just textures
+public static class Textures
+{
+    public static Texture2D SplashBackground { get; private set; }
+    public static Texture2D Checkmark { get; private set; }
+    public static Texture2D DiscordActive { get; private set; }
+    public static Texture2D DiscordInactive { get; private set; }
+    public static Texture2D Logo { get; private set; }
+    public static Texture2D Progressbar { get; private set; }
+    public static Texture2D ProgressbarMask { get; private set; }
+    public static Texture2D WebsiteActive { get; private set; }
+    public static Texture2D WebsiteInactive { get; private set; }
+    public static Texture2D OpenGameDirActive { get; private set; }
+    public static Texture2D OpenGameDirInactive { get; private set; }
+    public static Texture2D X { get; private set; }
+    public static Texture2D AppIcon { get; private set; }
+    
+    public static Sound ClickSound { get; private set; }
+    
+    public static Sound HoverSound { get; private set; }
+
+    public static void Load()
+    {
+        SplashBackground = LoadTexture("SplashBackground.png");
+        Checkmark = LoadTexture("checkmark.png");
+        DiscordActive = LoadTexture("discord_active.png");
+        DiscordInactive = LoadTexture("discord_inactive.png");
+        Logo = LoadTexture("logo.png");
+        Progressbar = LoadTexture("progressbar.png");
+        ProgressbarMask = LoadTexture("progressbar_mask.png");
+        WebsiteActive = LoadTexture("website_active.png");
+        WebsiteInactive = LoadTexture("website_inactive.png");
+        OpenGameDirActive = LoadTexture("opengamedir_active.png");
+        OpenGameDirInactive = LoadTexture("opengamedir_inactive.png");
+        X = LoadTexture("x.png");
+        AppIcon = LoadTexture("icon.png", isIcon: true);
+        ClickSound = LoadSoundAsset("click.wav");
+        HoverSound = LoadSoundAsset("hover.wav");
+        
+        Animator.BeanFrames =
+        [
+            LoadTexture("LilypadAnim_3.png"),
+            LoadTexture("LilypadAnim_2.png"),
+            LoadTexture("LilypadAnim_1.png"),
+            LoadTexture("LilypadAnim_6.png"),
+            LoadTexture("LilypadAnim_4.png"),
+            LoadTexture("LilypadAnim_5.png")
+        ];
+    }
+
+    private static Texture2D LoadTexture(string filename, bool isIcon = false)
+    {
+        var assembly = typeof(Textures).Assembly;
+
+        using var stream = assembly.GetManifestResourceStream($"Assets/{filename}") ?? throw new FileNotFoundException($"Embedded asset not found: {filename}");
+
+        using var memory = new MemoryStream();
+        stream.CopyTo(memory);
+
+        byte[] bytes = memory.ToArray();
+        Image image = Raylib.LoadImageFromMemory(".png", bytes);
+        
+        if (isIcon)
+        {
+            Raylib.ImageFormat(ref image, PixelFormat.UncompressedR8G8B8A8);
+            Raylib.SetWindowIcon(image);
+        }
+
+        try
+        {
+            return Raylib.LoadTextureFromImage(image);
+        }
+        finally
+        {
+            Raylib.UnloadImage(image);
+        }
+    }
+    
+    public static Sound LoadSoundAsset(string filename)
+    {
+        var assembly = typeof(Textures).Assembly;
+        using var stream = assembly.GetManifestResourceStream($"Assets/{filename}") ?? throw new FileNotFoundException($"Embedded sound not found: {filename}");
+
+        using var memory = new MemoryStream();
+        stream.CopyTo(memory);
+
+        byte[] bytes = memory.ToArray();
+        Wave wave = Raylib.LoadWaveFromMemory(Path.GetExtension(filename), bytes);
+
+        try {return Raylib.LoadSoundFromWave(wave);}
+        finally { Raylib.UnloadWave(wave); }
+    }
+
+    public static void Unload()
+    {
+        foreach (Texture2D texture in 
+            new[] { 
+                SplashBackground, Checkmark, DiscordActive, DiscordInactive, 
+                    Logo, Progressbar, ProgressbarMask, WebsiteActive, WebsiteInactive, X,
+                    OpenGameDirActive, OpenGameDirInactive, AppIcon
+            })
+        {
+            Raylib.UnloadTexture(texture);
+        }
+        Animator.BeanFrames = [];
+        Raylib.UnloadSound(ClickSound);
+        Raylib.UnloadSound(HoverSound);
+    }
+}

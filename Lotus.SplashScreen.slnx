@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="SplashScreen.PatcherPlugin/SplashScreen.PatcherPlugin.csproj" />
+  <Project Path="SplashScreen\SplashScreen.csproj" Type="Classic C#" />
+</Solution>
