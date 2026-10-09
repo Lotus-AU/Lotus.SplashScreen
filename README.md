@@ -14,7 +14,7 @@ There's a version of this without the Lotus specific theme and content, which I 
 
 You can find it at the following link: (to be added)
 
-If you do wish to use this version, note that it isn't very customizable.
+If you do wish to use the version in this repository, note that it isn't very customizable (other than assets).
 
 ---
 
